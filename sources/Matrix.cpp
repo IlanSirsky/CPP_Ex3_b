@@ -227,7 +227,85 @@ namespace zich{
         return out;
     }
 
-    istream& operator>>(istream& in, const Matrix& mat){
+    istream& operator>>(istream& in, Matrix& mat){
+        vector<double> newMat;
+        string inStr;
+        int row = 0;
+        int col = 0; //number of rows and columns to initialize the new matrix
+        int colAmount = 0; //used to count the amount of cols in the matrix and check the correctness of the input
+        int counter = 0; // check for [ ] correctness
+
+        while (getline(in, inStr))
+        {
+            for (size_t i = 0; i < inStr.length(); i++)
+            {
+                if (inStr[i] == '[')
+                {
+                    counter++;
+                    if (counter > 1)
+                    {
+                        throw invalid_argument("Amount of '[' and ']' don't match");
+                    }
+
+                    if (col == 0)
+                    {
+                        col = colAmount;
+                    }
+                    else if (col != colAmount)
+                    {
+                        throw invalid_argument("Number of columns don't match");
+                    }
+                    colAmount = 0;
+
+                    row++;
+                }
+                else if (inStr[i] == ']')
+                {
+                    counter--;
+                    if (counter < 0)
+                    {
+                        throw invalid_argument("Amount of '[' and ']' don't match");
+                    }
+                }
+                else if (inStr[i] == ' ' || inStr[i] == ',')
+                {
+                    if (inStr[i] == ',')
+                    {
+                        if (i == 0)
+                        {
+                            throw invalid_argument("Invalid input format");
+                        }
+                        if (inStr[i - 1] != ']' || inStr[i + 1] != ' ')
+                        {
+                            throw invalid_argument("Invalid input format");
+                        }
+                    }
+                    continue;
+                }
+                else if (inStr[i] >= '0' && inStr[i] <= '9')
+                {
+                    string currNum;
+                    while (inStr[i] >= '0' && inStr[i] <= '9')
+                    {
+                        currNum += inStr[i++];
+                    }
+                    double temp = stod(currNum);
+                    newMat.push_back(temp);
+
+                    colAmount++;
+                    i--;
+                }
+                else
+                {
+                    throw invalid_argument("Invalid input format");
+                }
+            }
+        }
+        if (counter != 0)
+        {
+            throw invalid_argument("Amount of '[' and ']' don't match");
+        }
+        mat = Matrix(newMat, row, col);
         return in;
     }
 }

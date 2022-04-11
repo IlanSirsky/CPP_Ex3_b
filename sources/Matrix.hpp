@@ -44,6 +44,6 @@ namespace zich{
             bool operator == (const Matrix &other) const;
 
             friend ostream& operator<<(ostream &out, const Matrix &mat);
-            friend istream& operator>>(istream &in, const Matrix &mat);
+            friend istream& operator>>(istream &in, Matrix &mat);
     };
 }
